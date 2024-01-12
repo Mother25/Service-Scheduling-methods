@@ -1,458 +1,171 @@
-/*
- * FCFS Scheduling Program in C
- */
-
 #include <stdio.h>
+#include <stdlib.h>
 
-void FCFS();
-
-void SHJF();
-
-void roundrobin();
-
-void priority();
-
-void preemtiveMode();
-
-void schedules(){
-
-    int schedule;
-
-    printf("\n 1. First Come First Served. ");
-
-    printf("\n 2. Shortest job first. ");
-
-    printf("\n 3. Round Robin. ");
-
-    printf("\n 4. Priority. ");
-
-    scanf("%d", &schedule);
-
-    switch(schedule){
-
-case 1:
-
-    FCFS();
-
-    break;
-
-case 2:
-
-    SHJF();
-
-    break;
-
-case 3:
-
-    roundrobin();
-
-    break;
-
-case 4:
-
-    priority();
-
-    break;
-
-default:
-    printf(" \n Enter correct options \n");
-
-
-    }
-
-
-
-}
-
-
-//Function to swap two variables
-void swap(int *a,int *b)
-{
-    int temp=*a;
-    *a=*b;
-    *b=temp;
-}
-
-
+int input();
+void output();
 
 int main()
 {
-    int option;
+    float result;
+    int choice, num;
+    printf("CPU Scheduler Simulator\n");
+    printf("1) scheduling Method (None)\n");
+    printf("2) Preemptive mode (Off)\n");
+    printf("3)Show Results\n");
+    printf("4)End Program\n");
+    printf("Option>\n");
 
-    do{
+    choice = input();  
 
+    switch (choice) {
+    case 1: {
+    int number_processes,burst_time[20],waiting_time[20],tat[20],average_waiting_time=0,average_piority=0,i,j; 
 
+    FILE*pfile=NULL;
+    printf("No of processes:");
+    scanf("%d",&number_processes);
+    printf("\nEnter Process Burst Time\n");
 
-
-    printf("\n 1. Scheduling method ");
-
-    printf("\n 2. Preemptive mode ");
-
-    printf("\n 3. End Program \n");
-
-    scanf("%d", &option);
-
-    switch(option){
-
-case 1:
-
-    schedules();
-
-    break;
-
-case 2:
-
-    preemtiveMode();
-
-    break;
-
-case 3:
-    exit(1);
-    break;
-
-default:
-
-    printf("\n Please, enter a correct option ");
-
-
-
-    }
-
-    }
-
-    while(schedules!=3);
-
-   // FCFS();
-
-   // SHJF();
-
-   // roundrobin();
-
-   // priority();
-
-}
-
-
-void FCFS(){
-
-int pid[15];
-    int bt[15];
-    int n;
-    printf("Enter the number of processes: ");
-    scanf("%d",&n);
-
-    printf("Enter process id of all the processes: ");
-    for(int i=0;i<n;i++)
+    for(i=0;i<number_processes;i++)
     {
-        scanf("%d",&pid[i]);
+        printf("P[%d]:",i+1);
+        scanf("%d",&burst_time[i]);
     }
-
-    printf("Enter burst time of all the processes: ");
-    for(int i=0;i<n;i++)
+    waiting_time[0]=0;
+    for(i=1;i<number_processes;i++)
     {
-        scanf("%d",&bt[i]);
+        waiting_time[i]=0;
+        for(j=0;j<i;j++)
+            waiting_time[i]+=burst_time[j];
     }
+    printf("\nProcess\t\tBurst Time\tWaiting Time\tpiority Time");
 
-    int i, wt[n];
-    wt[0]=0;
-
-    //for calculating waiting time of each process
-    for(i=1; i<n; i++)
+    for(i=0;i<number_processes;i++)
     {
-        wt[i]= bt[i-1]+ wt[i-1];
+        tat[i]=burst_time[i]+waiting_time[i];
+        average_waiting_time+=waiting_time[i];
+        average_piority+=tat[i];
+        printf("\nP[%d]\t\t%d\t\t%d\t\t%d",i+1,burst_time[i],waiting_time[i],tat[i]);
     }
 
-    printf("Process ID     Burst Time     Waiting Time     TurnAround Time\n");
-    float twt=0.0;
-    float tat= 0.0;
-    for(i=0; i<n; i++)
-    {
-        printf("%d\t\t", pid[i]);
-        printf("%d\t\t", bt[i]);
-        printf("%d\t\t", wt[i]);
-
-        //calculating and printing turnaround time of each process
-        printf("%d\t\t", bt[i]+wt[i]);
-        printf("\n");
-
-        //for calculating total waiting time
-        twt += wt[i];
-
-        //for calculating total turnaround time
-        tat += (wt[i]+bt[i]);
+    average_waiting_time/=i;
+    average_piority/=i; 
+    pfile = fopen("output.txt", "w");
+    fprintf(pfile,"\n\nAverage Waiting Time:%d",average_waiting_time);
+    fprintf(pfile,"\nAverage piority:%d",average_piority);
+    return 0;
     }
-    float att,awt;
 
-    //for calculating average waiting time
-    awt = twt/n;
+    case 2: {
+      FILE*pfile=NULL;
+      int burst_time[20],p[20],waiting_time[20],piority[20],pr[20],i,j,n,total=0,pos,temp,average_waiting_time,average_piority;
+      printf("No of processes:");
+      scanf("%d",&n);
+      printf("\nEnter Burst Time and Priority for preemptive scheduling\n");
 
-    //for calculating average turnaround time
-    att = tat/n;
-    printf("Avg. waiting time= %f\n",awt);
-    printf("Avg. turnaround time= %f",att);
-
-
-
-
-
-}
-
-
-void SHJF(){
-
-int bt[20],p[20],wt[20],tat[20],i,j,n,total=0,pos,temp;
-    float avg_wt,avg_tat;
-    printf("Enter number of process:");
-    scanf("%d",&n);
-
-    printf("nEnter Burst Time:n");
     for(i=0;i<n;i++)
     {
-        printf("p%d:",i+1);
-        scanf("%d",&bt[i]);
-        p[i]=i+1;
+        printf("\nP[%d]\n",i+1);
+        printf("Burst Time:");
+        scanf("%d",&burst_time[i]);
+        printf("Priority:");
+        scanf("%d",&pr[i]);
+        p[i]=i+1;           
     }
 
-   //sorting of burst times
     for(i=0;i<n;i++)
     {
         pos=i;
         for(j=i+1;j<n;j++)
         {
-            if(bt[j]<bt[pos])
+            if(pr[j]<pr[pos])
                 pos=j;
         }
 
-        temp=bt[i];
-        bt[i]=bt[pos];
-        bt[pos]=temp;
+        temp=pr[i];
+        pr[i]=pr[pos];
+        pr[pos]=temp;
 
+        temp=burst_time[i];
+        burst_time[i]=burst_time[pos];
+        burst_time[pos]=temp;
         temp=p[i];
         p[i]=p[pos];
         p[pos]=temp;
     }
 
-    wt[0]=0;
-
-
+    waiting_time[0]=0;
     for(i=1;i<n;i++)
     {
-        wt[i]=0;
+        waiting_time[i]=0;
         for(j=0;j<i;j++)
-            wt[i]+=bt[j];
+            waiting_time[i]+=burst_time[j];
 
-        total+=wt[i];
+        total+=waiting_time[i];
     }
 
-    avg_wt=(float)total/n;
+
+    average_waiting_time=total/n;      //average waiting time
     total=0;
 
-    printf("nProcesst    Burst Time    tWaiting TimetTurnaround Time");
+    printf("\nProcess\t    Burst Time    \tWaiting Time\t Piority Time");
     for(i=0;i<n;i++)
     {
-        tat[i]=bt[i]+wt[i];
-        total+=tat[i];
-        printf("np%dtt  %dtt    %dttt%d",p[i],bt[i],wt[i],tat[i]);
+        piority[i] = burst_time[i] + waiting_time[i];     //calculate turnaround time
+        total += piority[i];
+        printf("\nP[%d]\t\t  %d\t\t    %d\t\t\t%d",p[i],burst_time[i],waiting_time[i],piority[i]);
     }
+    pfile = fopen("output.txt", "w");
+    average_piority=total/n;     //average turnaround time
+    fprintf(pfile, "\n\nAverage Waitng Time:%d",average_waiting_time);
+    fprintf(pfile,"\nAverage Turnaround Time:%d",average_piority);
 
-    avg_tat=(float)total/n;
-    printf("nnAverage Waiting Time=%f",avg_wt);
-    printf("nAverage Turnaround Time=%fn",avg_tat);
 
+
+   
+
+return 0;
     }
+    case 3: {
 
+    char *filename = "output.txt";
+    FILE *fp = fopen(filename, "r");
 
-   void roundrobin(){
-
-
-    // initlialize the variable name
-    int i, NOP, sum=0,count=0, y, quant, wt=0, tat=0, at[10], bt[10], temp[10];
-    float avg_wt, avg_tat;
-    printf(" Total number of process in the system: ");
-    scanf("%d", &NOP);
-    y = NOP; // Assign the number of process to variable y
-
-// Use for loop to enter the details of the process like Arrival time and the Burst Time
-for(i=0; i<NOP; i++)
-{
-printf("\n Enter the Arrival and Burst time of the Process[%d]\n", i+1);
-printf(" Arrival time is: \t");  // Accept arrival time
-scanf("%d", &at[i]);
-printf(" \nBurst time is: \t"); // Accept the Burst time
-scanf("%d", &bt[i]);
-temp[i] = bt[i]; // store the burst time in temp array
-}
-// Accept the Time qunat
-printf("Enter the Time Quantum for the process: \t");
-scanf("%d", &quant);
-// Display the process No, burst time, Turn Around Time and the waiting time
-printf("\n Process No \t\t Burst Time \t\t TAT \t\t Waiting Time ");
-for(sum=0, i = 0; y!=0; )
-{
-if(temp[i] <= quant && temp[i] > 0) // define the conditions
-{
-    sum = sum + temp[i];
-    temp[i] = 0;
-    count=1;
-    }
-    else if(temp[i] > 0)
+    if (fp == NULL)
     {
-        temp[i] = temp[i] - quant;
-        sum = sum + quant;
-    }
-    if(temp[i]==0 && count==1)
-    {
-        y--; //decrement the process no.
-        printf("\nProcess No[%d] \t\t %d\t\t\t\t %d\t\t\t %d", i+1, bt[i], sum-at[i], sum-at[i]-bt[i]);
-        wt = wt+sum-at[i]-bt[i];
-        tat = tat+sum-at[i];
-        count =0;
-    }
-    if(i==NOP-1)
-    {
-        i=0;
-    }
-    else if(at[i+1]<=sum)
-    {
-        i++;
-    }
-    else
-    {
-        i=0;
-    }
-}
-// represents the average waiting time and Turn Around time
-avg_wt = wt * 1.0/NOP;
-avg_tat = tat * 1.0/NOP;
-printf("\n Average Turn Around Time: \t%f", avg_wt);
-printf("\n Average Waiting Time: \t%f", avg_tat);
-getch();
-
-
+        printf("Error: could not open file %s", filename);
+        return 1;
     }
 
+    // reading line by line, max 256 bytes
+    const unsigned MAX_LENGTH = 256;
+    char buffer[MAX_LENGTH];
 
+    while (fgets(buffer, MAX_LENGTH, fp))
+        printf("%s", buffer);
 
-    void priority(){
+    // close the file
+    fclose(fp);
 
-
-    int n;
-    printf("Enter Number of Processes: ");
-    scanf("%d",&n);
-
-    // b is array for burst time, p for priority and index for process id
-    int b[n],p[n],index[n];
-    for(int i=0;i<n;i++)
-    {
-        printf("Enter Burst Time and Priority Value for Process %d: ",i+1);
-        scanf("%d %d",&b[i],&p[i]);
-        index[i]=i+1;
+    return 0;
     }
-    for(int i=0;i<n;i++)
-    {
-        int a=p[i],m=i;
-
-        //Finding out highest priority element and placing it at its desired position
-        for(int j=i;j<n;j++)
-        {
-            if(p[j] > a)
-            {
-                a=p[j];
-                m=j;
-            }
-        }
-
-        //Swapping processes
-        swap(&p[i], &p[m]);
-        swap(&b[i], &b[m]);
-        swap(&index[i],&index[m]);
+      case 4: {
+// EXIT_SUCCESS
+    exit(0);
     }
-
-    // T stores the starting time of process
-    int t=0;
-
-    //Printing scheduled process
-    printf("Order of process Execution is\n");
-    for(int i=0;i<n;i++)
-    {
-        printf("P%d is executed from %d to %d\n",index[i],t,t+b[i]);
-        t+=b[i];
-    }
-    printf("\n");
-    printf("Process Id     Burst Time   Wait Time    TurnAround Time\n");
-    int wait_time=0;
-    for(int i=0;i<n;i++)
-    {
-        printf("P%d          %d          %d          %d\n",index[i],b[i],wait_time,wait_time + b[i]);
-        wait_time += b[i];
+    default:
+        printf("wrong Input\n");
     }
     return 0;
+}
+int input()
+{
+    int number;
+    scanf("%d", &number);
+    return (number);
+}
 
-    }
-
-
-    void preemtiveMode(){
-
-    int et[20],at[10],n,i,j,temp,p[10],st[10],ft[10],wt[10],ta[10];
-    int totwt=0,totta=0;
-    float awt,ata;
-    char pn[10][10],t[10];
-    //clrscr();
-    printf("Enter the number of process:");
-    scanf("%d",&n);
-    for(i=0; i<n; i++)
-    {
-        printf("Enter process name,arrivaltime,execution time & priority:");
-        //flushall();
-        scanf("%s%d%d%d",pn[i],&at[i],&et[i],&p[i]);
-    }
-    for(i=0; i<n; i++)
-        for(j=0; j<n; j++)
-        {
-            if(p[i]<p[j])
-            {
-                temp=p[i];
-                p[i]=p[j];
-                p[j]=temp;
-                temp=at[i];
-                at[i]=at[j];
-                at[j]=temp;
-                temp=et[i];
-                et[i]=et[j];
-                et[j]=temp;
-                strcpy(t,pn[i]);
-                strcpy(pn[i],pn[j]);
-                strcpy(pn[j],t);
-            }
-        }
-    for(i=0; i<n; i++)
-
-    {
-
-        if(i==0)
-        {
-            st[i]=at[i];
-            wt[i]=st[i]-at[i];
-            ft[i]=st[i]+et[i];
-            ta[i]=ft[i]-at[i];
-        }
-        else
-        {
-            st[i]=ft[i-1];
-            wt[i]=st[i]-at[i];
-            ft[i]=st[i]+et[i];
-            ta[i]=ft[i]-at[i];
-        }
-        totwt+=wt[i];
-        totta+=ta[i];
-    }
-    awt=(float)totwt/n;
-    ata=(float)totta/n;
-    printf("\nPname\tarrivaltime\texecutiontime\tpriority\twaitingtime\ttatime");
-    for(i=0; i<n; i++)
-        printf("\n%s\t%5d\t\t%5d\t\t%5d\t\t%5d\t\t%5d",pn[i],at[i],et[i],p[i],wt[i],ta[i]);
-    printf("\nAverage waiting time is:%f",awt);
-    printf("\nAverage turnaroundtime is:%f",ata);
-    return 0;
-
-    }
+void output(int number)
+{
+    printf("%d", number);
+}
